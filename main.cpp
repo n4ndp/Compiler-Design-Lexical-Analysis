@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -37,4 +38,65 @@ public:
     // Constructor para tokens con lexema de cadena.
     Token(Type t, const std::string source): type(t), lexeme(source) {};
 };
+
+// Sobrecarga del operador de salida para imprimir información de un Token.
+std::ostream& operator<<(std::ostream& os, const Token& token) {
+    os << token_names[token.type]; // Imprime el nombre del tipo de token
+    
+    // Si el token tiene un lexema, lo imprime entre paréntesis
+    if (!token.lexeme.empty())
+        os << "(" << token.lexeme << ")";
+    
+    return os;
+}
+
+// Clase que representa el scanner.
+class Scanner {  
+private:
+    std::string input;
+    int first, current, state;
+
+    // Obtener el siguiente carácter del input
+    char nextChar() {
+        char c = input[current];
+        if (c != '\0')
+            current++;
+        return c;
+    }
+
+    // Retroceder la posición actual en el input
+    void rollBack() {
+        if (input[current] != '\0')
+            current--;
+        return;
+    }
+
+    // Iniciar el índice del lexema
+    void startLexeme() {
+        first = current-1;  
+        return;
+    }
+
+    // Incrementar el índice del lexema
+    void incrStartLexeme() {
+        first++;
+    }
+
+    // Obtener el lexema actual
+    std::string getLexeme() {
+        return input.substr(first,current-first);
+    }
+
+public:
+    Scanner(const char* in): input(in), first(0), current(0), state(0) {}
+    Token* nextToken() {
+        // Aquí es donde implementarás la lógica para reconocer tokens
+        // basados en el autómata finito y los estados definidos.
+        // Retorna el token apropiado en cada caso.
+    }
+    ~Scanner() = default;
+};
+
+
+
 
