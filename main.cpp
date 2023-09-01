@@ -213,11 +213,19 @@ public:
                         if (keywordToken) {
                             // Si es una palabra reservada, usamos el token de palabra reservada.
                             token = keywordToken;
+                            state = 0; // Regresamos al estado inicial para reconocer el próximo token.
                         } else {
-                            // Si no es una palabra reservada, asumimos que es un ID.
-                            token = new Token(ID, lexeme);
+                             if (lexeme == "goto") {
+                                // GOTO
+                                token = new Token(GOTO);
+                                state = 3; // Cambiamos al estado 3 para reconocer etiquetas.
+                             } else {
+                                // Si no es una palabra reservada, asumimos que es un ID.
+                                token = new Token(ID, lexeme);
+                                state = 0; // Regresamos al estado inicial para reconocer el próximo token.
+                             }
                         }
-                        state = 0; // Regresamos al estado inicial para reconocer el próximo token.
+
                         return token;
                     }
 
@@ -248,10 +256,31 @@ public:
                     rollBack(); // Retrocedemos para no incluir el último carácter no alfanumérico (acumulado en case 1).
 
                     std::string lexeme = getLexeme(); // Obtenemos el lexema acumulado.
-                    token = new Token(LABEL, lexeme); // Creamos un token de tipo LABEL con el lexema.
-                    state = 0; // Regresamos al estado inicial.
+                    
+                    // GOTO
+                    if(lexeme == "goto") {
+                        // goto + espacio + label
+                        c = nextChar();
+                        c = nextChar();
 
-                    c = nextChar();
+                        // Reiniciamos el lexema
+                        startLexeme();
+                        while (isalnum(c) || c == '_') {
+                            // Mientras el carácter actual sea alfanumérico o un '_', avanzamos en el lexema.
+                            c = nextChar();
+                        }
+                        rollBack(); // Retrocedemos para no incluir el último carácter no alfanumérico.
+
+                        lexeme = getLexeme(); // Actualizamos el lexema
+
+                        token = new Token(LABEL, lexeme); // Creamos un token de tipo LABEL con el lexema.
+                        state = 0; // Regresamos al estado inicial.
+                    } else {
+                        token = new Token(LABEL, lexeme); // Creamos un token de tipo LABEL con el lexema.
+                        state = 0; // Regresamos al estado inicial.
+
+                        c = nextChar();
+                    }
 
                     return token;
                 }
