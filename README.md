@@ -1,22 +1,19 @@
 # **Compiler Design | `Lexical Analysis`**
 
-Este repositorio contiene implementación de un analizador léxico (`Scanner`) en el lenguaje 
-de programación C++ para el lenguaje de la máquina de pila SM (definido en la sección 1). 
+La siguiente gramática define la estructura y organización de las instrucciones en el 
+lenguaje SM:
 
-# **1. Sintaxis de SM**
-
-El lenguaje de máquina de pila SM está definido por la siguiente gramática:
-
-``` 
+```plaintext
 <program> ::= <instruction>+
-<instruction> ::= Label? ((<jmpinstr> <id>) | <unaryinstr> | (push <num>) <eol>
+<instruction> ::= Label? ((<jmpinstr> <id>) | <unaryinstr> | (push <num>) <eol>)
 <jmpinstr> ::= jmpeq | jmpgt | jmpge | jmplt | jmple | goto
 <unaryinstr> ::= skip | pop | dup | swap | add | sub | mul | div | store | load
 ```
 
-La especificación léxica está dada por los siguientes patrones (expresiones regulares):
+La especificación léxica describe las reglas para reconocer tokens y lexemas en el código 
+fuente SM. Aquí están las expresiones regulares que se utilizan:
 
-```
+```plaintext
 digit               ::= [0-9]
 character           ::= [a-zA-Z]
 <reserved-word>     ::= push | jmpeq | jmpgt | jmpge | jmplt | jmple | skip | pop | 
@@ -28,22 +25,8 @@ character           ::= [a-zA-Z]
 <ws>                ::= (‘ ‘ | ‘\t’)+
 ```
 
-Las unidades léxicas <id>, <num> y <eol> , y <reserved-word>, generan un token. El 
-patrón <ws> no genera token; denota los espacios en blancos y se ignoran. Los tokens 
-llevan el nombre de sus unidades léxicas pero en mayúscula e.g. el token NUM denota la 
-unidad lexica <num>. Solo los tokens correspondientes a <num> y <id> tendrán como 
-atributo al lexema. Solo los tokens correspondientes a <num> y <id> tendrán como atributo 
-al lexema.  Resumiendo, los tokens a generar son:
-• Un tipo de token por cada palabra reservada, con el mismo nombre del lexema. Por 
-ejemplo, la palabra reservada pop generara el token POP.
-Asi tendremos PUSH, JMPEQ, JMPGT, …, STORE, LOAD
-• NUM(lexema) lexema es <num>
-• ID(lexema) lexema es <id>
-• LABEL(id) donde el lexema es id: 
-• EOL
-Además se generara un token especial para reportar errores:
-• ERR(lexema) donde el lexema será el carácter invalido.
-• Los espacios en blanco (<ws>) serán igorados i.e. no se generara ningún token.
-
-En el programa, los tipos de token son definidos por enum Type: 
-enum TokenType { ID, NUM, EOL, PUSH, JMPEQ, …, STORE, LOAD, ERR, END }
+Las unidades léxicas, como <id>, <num>, <eol> y todas las palabras reservadas, se 
+convierten en tokens. Sin embargo, el patrón <ws> que representa espacios en blanco no 
+genera tokens y se prefiere ignorarlos. Los nombres de los tokens se escriben en mayúsculas 
+y coinciden con las unidades léxicas correspondientes. Además, se crea un token especial 
+para señalar errores.
