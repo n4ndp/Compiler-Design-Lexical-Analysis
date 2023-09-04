@@ -56,7 +56,7 @@ std::string Scanner::getLexeme() {
     return input.substr(first,current-first);
 }
 
-// Analizador
+// Scanner
 Token* Scanner::nextToken() {
     Token* token;
     char c = nextChar();
@@ -65,14 +65,14 @@ Token* Scanner::nextToken() {
         switch (state) {
             case 0: { // Estado inicial del autómata (reconocedor).
                 if (c == ' ' || c == '\t') c = nextChar(); // Si el carácter es un espacio en blanco o una tabulación, avanzamos al siguiente carácter.
-                else if (isalpha(c)) state = 1; // Si el carácter es una letra, pasamos al estado 1 para reconocer palabras reservadas y IDs.
-                else if (isdigit(c)) state = 2; // Si el carácter es un dígito, pasamos al estado 2 para reconocer números.
-                else if (c == ':') state = 3; // Si el carácter es ':', cambiamos al estado 3 para reconocer etiquetas.
-                else if (c == '\n') state = 4; // Si el carácter es un salto de línea, pasamos al estado 4 para reconocer fin de línea.
-                else if (c == '\0') state = 5; // Si el carácter es el final del archivo, pasamos al estado 5 para reconocer fin de archivo.
+                else if (isalpha(c)) state = 1;
+                else if (isdigit(c)) state = 2;
+                else if (c == ':') state = 3;
+                else if (c == '\n') state = 4;
+                else if (c == '\0') state = 5;
                 else { 
                     // Si el carácter no coincide con ninguno de los casos anteriores, es un error.
-                    token = new Token(ERR);
+                    token = new Token(ERR, std::string(1, c));
                     state = 0; // Regresamos al estado inicial para reconocer el próximo token.
 
                     return token;
@@ -92,10 +92,7 @@ Token* Scanner::nextToken() {
                     Token* keywordToken = isKW(lexeme); // Verificamos si el lexema es una palabra reservada o un ID.
 
                     if (keywordToken) token = keywordToken;
-                    else {
-                        if (lexeme == "goto") token = new Token(GOTO);
-                        else token = new Token(ID, lexeme);
-                    }
+                    else token = new Token(ID, lexeme);
                     state = 0; // Regresamos al estado inicial para reconocer el próximo token.
 
                     return token;
@@ -115,26 +112,19 @@ Token* Scanner::nextToken() {
                 return token;
             }
             case 3: { // Estado para reconocer etiquetas.
-                rollBack(); // Retrocedemos para no incluir el último carácter no alfanumérico (acumulado en case 1).
                 std::string lexeme = getLexeme(); // Obtenemos el lexema acumulado.
                 token = new Token(LABEL, lexeme);
                 state = 0; // Regresamos al estado inicial para reconocer el próximo token.
 
-                c = nextChar(); // Para omitir el carácter ':' luego de la etiqueta.
-
                 return token;
             }
             case 4: { // Estado para reconocer fin de línea.
-                startLexeme();
-
-                token = new Token(EOL); // Creamos un token de tipo EOL.
+                token = new Token(EOL);
                 state = 0; // Regresamos al estado inicial.
 
                 return token;
             }
-            case 5: { // Estado para reconocer fin de archivo.
-                startLexeme();
-                    
+            case 5: { // Estado para reconocer fin de archivo.  
                 token = new Token(END);
                 return token;
             }

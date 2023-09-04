@@ -1,7 +1,7 @@
 push 3
 
 
-L1: jmpgt
+L1: jmpgt+$
 mult
 add
 goto L1
