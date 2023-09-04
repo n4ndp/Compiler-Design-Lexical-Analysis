@@ -1,18 +1,7 @@
 push 3
 
+
 L1: jmpgt
 mult
 add
-
-L2: dup
-pop
-load x
 goto L1
-
-L3: sub
-swap
-push 5
-jmpge L4
-store
-
-L4: div
