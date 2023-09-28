@@ -80,7 +80,6 @@ Token* Scanner::next_token() {
                 else if (c == '\n') state = 4;
                 else return new Token(Token::ERR, c);
                 break;
-
             case 1:
                 while (isalpha(c) || isdigit(c) || c == '_') c = this->next_char();
                 if (c == ':') {
@@ -104,17 +103,17 @@ Token* Scanner::next_token() {
 
                 return new Token(Token::NUM, this->get_lexeme());
             case 3:
-                //this->roll_back();
                 token = new Token(Token::LABEL, this->get_lexeme());
-                //this->next_char();
 
                 return token;
-
             case 4:
                 while (c == '\n') c = this->next_char();
                 this->roll_back();
 
-                return new Token(Token::EOL);            
+                return new Token(Token::EOL);
+            default:
+                std::cout << "Programming Error ... quitting" << std::endl;
+                exit(0);
         }
     }
 }
