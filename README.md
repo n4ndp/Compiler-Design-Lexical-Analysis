@@ -19,7 +19,7 @@ character           ::= [a-zA-Z]
 <id>                ::= character | (character | digit | ‘_’)*
 <label>             ::= <id>:
 <num>               ::= digit+
-<eol>               ::= ‘\n’
+<eol>               ::= ‘\n’+
 <ws>                ::= (‘ ‘ | ‘\t’)+
 ```
 

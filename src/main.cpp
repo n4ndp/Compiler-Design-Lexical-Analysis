@@ -9,11 +9,11 @@ int main(int argc, char** argv) {
 
     Scanner scanner(stream.str().c_str());
 
-    Token* tk = scanner.nextToken();
-    while (tk->type != END) {
+    Token* tk = scanner.next_token();
+    while (tk->type != Token::END) {
         std::cout << "next token " << *tk << std::endl;
         delete tk;
-        tk =  scanner.nextToken();
+        tk =  scanner.next_token();
     }
 
     return 0;

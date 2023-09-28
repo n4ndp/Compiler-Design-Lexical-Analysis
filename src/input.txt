@@ -1,7 +1,7 @@
-push 3
+mul 3
 
 
-L1: jmpgt+$
-mult
+L1: jmpgt
+mul
 add
 goto L1

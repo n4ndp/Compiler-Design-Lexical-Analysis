@@ -1,135 +1,122 @@
-#ifndef SCANNER_H
-#define SCANNER_H
+#ifndef Lexical_Analysis_SCANNER_H
+#define Lexical_Analysis_SCANNER_H
 
 #include "token.h"
 
-// Clase que representa el scanner.
 class Scanner {
 private:
     std::string input;
     int first, current, state;
+    std::unordered_map<std::string, Token::Type> reserved;
 
 public:
-    Scanner(const char* in);
+    Scanner(const char*);
+    Token* next_token();
     ~Scanner();
-    Token* nextToken();
 
 private:
-    char nextChar(); // Obtener el siguiente carácter del input.
-    void rollBack(); // Retroceder la posición actual en el input.
-    void startLexeme(); // Iniciar el índice del lexema.
-    void incrStartLexeme(); // Incrementar el índice del lexema.
-    std::string getLexeme(); // Obtener el lexema actual.
+    char next_char();
+    void roll_back();
+    void start_lexeme();
+    void incr_start_lexeme();
+    std::string get_lexeme();
+    Token::Type check_reserved(const std::string& lexema);
 };
 
-Scanner::Scanner(const char* in): input(in), first(0), current(0), state(0) { }
-
-Scanner::~Scanner() { }
-
-// Obtener el siguiente carácter del input.
-char Scanner::nextChar() {
+char Scanner::next_char() {
     int c = input[current];
-    if (c != '\0') current++;
+    current++;
     return c;
 }
 
-// Retroceder la posición actual en el input.
-void Scanner::rollBack() {
-    /*if (input[current] != '\0') */current--;
-    return;
+void Scanner::roll_back() { current--; }
+void Scanner::start_lexeme() { first = current - 1; }
+void Scanner::incr_start_lexeme() { first++; }
+std::string Scanner::get_lexeme() { return input.substr(first, current - first); }
+
+Token::Type Scanner::check_reserved(const std::string& lexema) { 
+    std::unordered_map<std::string, Token::Type>::const_iterator it = reserved.find(lexema);
+    return it == reserved.end() ? Token::ERR : it->second;
 }
 
-// Iniciar el índice del lexema.
-void Scanner::startLexeme() {
-    first = current-1;  
-    return;
+Scanner::Scanner(const char* input): input(input), first(0), current(0) {
+    // Inicializar palabras reservadas
+    reserved["push"] = Token::PUSH;
+    reserved["jmpeq"] = Token::JMPEQ;
+    reserved["jmpgt"] = Token::JMPGT;
+    reserved["jmpge"] = Token::JMPGE;
+    reserved["jmplt"] = Token::JMPLT;
+    reserved["jmple"] = Token::JMPLE;
+    reserved["goto"] = Token::GOTO;
+    reserved["skip"] = Token::SKIP;
+    reserved["pop"] = Token::POP;
+    reserved["dup"] = Token::DUP;
+    reserved["swap"] = Token::SWAP;
+    reserved["add"] = Token::ADD;   
+    reserved["sub"] = Token::SUB;
+    reserved["mul"] = Token::MUL;
+    reserved["div"] = Token::DIV;
+    reserved["store"] = Token::STORE;
+    reserved["load"] = Token::LOAD;
 }
 
-// Incrementar el índice del lexema.
-void Scanner::incrStartLexeme() {
-    first++;
-    return;
-}
+Scanner::~Scanner() { }
 
-// Obtener el lexema actual.
-std::string Scanner::getLexeme() {
-    return input.substr(first,current-first);
-}
-
-// Scanner
-Token* Scanner::nextToken() {
+Token* Scanner::next_token() {
     Token* token;
-    char c = nextChar();
+    char c = next_char();
+
+    while (c == ' ') c = this->next_char();
+    if (c == '\0') return new Token(Token::END);
+
+    this->start_lexeme();
+    state = 0;
 
     while (true) {
         switch (state) {
-            case 0: { // Estado inicial del autómata (reconocedor).
-                if (c == ' ' || c == '\t') c = nextChar(); // Si el carácter es un espacio en blanco o una tabulación, avanzamos al siguiente carácter.
-                else if (isalpha(c)) state = 1;
+            case 0:
+                if (isalpha(c)) state = 1;
                 else if (isdigit(c)) state = 2;
-                else if (c == ':') state = 3;
                 else if (c == '\n') state = 4;
-                else if (c == '\0') state = 5;
-                else { 
-                    // Si el carácter no coincide con ninguno de los casos anteriores, es un error.
-                    token = new Token(ERR, std::string(1, c));
-                    state = 0; // Regresamos al estado inicial para reconocer el próximo token.
-
-                    return token;
-                }
-
+                else return new Token(Token::ERR, c);
                 break;
-            }
-            case 1: { // Estado para reconocer palabras reservadas y IDs.
-                startLexeme();
-                while (isalnum(c) || c == '_') c = nextChar();
 
-                if (c == ':') state = 3; // Si el próximo carácter es ':', cambiamos al estado 3 para reconocer etiquetas.
+            case 1:
+                while (isalpha(c) || isdigit(c) || c == '_') c = this->next_char();
+                if (c == ':') {
+                    state = 3;
+                    break;
+                }
                 else {
-                    // Si el próximo carácter no es ':', puede ser una palabra reservada válida o un ID.
-                    rollBack(); // Retrocedemos para no incluir el último carácter no alfanumérico.
-                    std::string lexeme = getLexeme(); // Obtenemos el lexema acumulado.
-                    Token* keywordToken = isKW(lexeme); // Verificamos si el lexema es una palabra reservada o un ID.
+                    this->roll_back();
 
-                    if (keywordToken) token = keywordToken;
-                    else token = new Token(ID, lexeme);
-                    state = 0; // Regresamos al estado inicial para reconocer el próximo token.
+                    std::string lexeme = this->get_lexeme();
+                    Token::Type token_type = this->check_reserved(lexeme);
 
-                    return token;
+                    if (token_type != Token::ERR) return new Token(token_type);
+                    else return new Token(Token::ID, this->get_lexeme());
                 }
+            case 2:
+                this->start_lexeme();
 
-                break;
-            }
-            case 2: { // Estado para reconocer números.
-                startLexeme();
-                while (isdigit(c)) c = nextChar();
+                while (isdigit(c)) c = this->next_char();
+                this->roll_back();
 
-                rollBack(); // Retrocedemos para no incluir el último carácter no numérico.
-                std::string lexeme = getLexeme(); // Obtenemos el lexema acumulado.
-                token = new Token(NUM, lexeme);
-                state = 0; // Regresamos al estado inicial para reconocer el próximo token.
-
-                return token;
-            }
-            case 3: { // Estado para reconocer etiquetas.
-                std::string lexeme = getLexeme(); // Obtenemos el lexema acumulado.
-                token = new Token(LABEL, lexeme);
-                state = 0; // Regresamos al estado inicial para reconocer el próximo token.
+                return new Token(Token::NUM, this->get_lexeme());
+            case 3:
+                //this->roll_back();
+                token = new Token(Token::LABEL, this->get_lexeme());
+                //this->next_char();
 
                 return token;
-            }
-            case 4: { // Estado para reconocer fin de línea.
-                token = new Token(EOL);
-                state = 0; // Regresamos al estado inicial.
 
-                return token;
-            }
-            case 5: { // Estado para reconocer fin de archivo.  
-                token = new Token(END);
-                return token;
-            }
+            case 4:
+                while (c == '\n') c = this->next_char();
+                this->roll_back();
+
+                return new Token(Token::EOL);            
         }
     }
 }
 
-#endif // SCANNER_H
+#endif // Lexical_Analysis_SCANNER_H
