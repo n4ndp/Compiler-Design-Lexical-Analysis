@@ -10,9 +10,8 @@ private:
     std::unordered_map<std::string, Token::Type> reserved;
 
 public:
-    Scanner(const char*);
+    Scanner(const std::string&);
     Token* next_token();
-    ~Scanner();
 
 private:
     char next_char();
@@ -20,7 +19,7 @@ private:
     void start_lexeme();
     void incr_start_lexeme();
     std::string get_lexeme();
-    Token::Type check_reserved(const std::string& lexema);
+    Token::Type check_reserved(const std::string&);
 };
 
 char Scanner::next_char() {
@@ -34,13 +33,12 @@ void Scanner::start_lexeme() { first = current - 1; }
 void Scanner::incr_start_lexeme() { first++; }
 std::string Scanner::get_lexeme() { return input.substr(first, current - first); }
 
-Token::Type Scanner::check_reserved(const std::string& lexema) { 
-    std::unordered_map<std::string, Token::Type>::const_iterator it = reserved.find(lexema);
+Token::Type Scanner::check_reserved(const std::string& lexeme) { 
+    std::unordered_map<std::string, Token::Type>::const_iterator it = reserved.find(lexeme);
     return it == reserved.end() ? Token::ERR : it->second;
 }
 
-Scanner::Scanner(const char* input): input(input), first(0), current(0) {
-    // Inicializar palabras reservadas
+Scanner::Scanner(const std::string&  input): input(input), first(0), current(0) {
     reserved["push"] = Token::PUSH;
     reserved["jmpeq"] = Token::JMPEQ;
     reserved["jmpgt"] = Token::JMPGT;
@@ -58,9 +56,8 @@ Scanner::Scanner(const char* input): input(input), first(0), current(0) {
     reserved["div"] = Token::DIV;
     reserved["store"] = Token::STORE;
     reserved["load"] = Token::LOAD;
+    reserved["print"] = Token::PRINT;
 }
-
-Scanner::~Scanner() { }
 
 Token* Scanner::next_token() {
     Token* token;
@@ -68,6 +65,10 @@ Token* Scanner::next_token() {
 
     while (c == ' ') c = this->next_char();
     if (c == '\0') return new Token(Token::END);
+    if (c == '%') {
+        while (c != '\n' && c != '\0') c = this->next_char();
+        if (c == '\n') return this->next_token();
+    }
 
     this->start_lexeme();
     state = 0;
@@ -88,7 +89,6 @@ Token* Scanner::next_token() {
                 }
                 else {
                     this->roll_back();
-
                     std::string lexeme = this->get_lexeme();
                     Token::Type token_type = this->check_reserved(lexeme);
 
@@ -97,7 +97,6 @@ Token* Scanner::next_token() {
                 }
             case 2:
                 this->start_lexeme();
-
                 while (isdigit(c)) c = this->next_char();
                 this->roll_back();
 

@@ -11,8 +11,8 @@ struct Token {
     enum Type { ID=0, LABEL, NUM, EOL, ERR, END, 
                 PUSH, JMPEQ, JMPGT, JMPGE, JMPLT, JMPLE, 
                 GOTO, SKIP, POP, DUP, SWAP, 
-                ADD, SUB, MUL, DIV, STORE, LOAD };
-    static const char* token_names[23];
+                ADD, SUB, MUL, DIV, STORE, LOAD, PRINT };
+    static const char* token_names[24];
 
     Type type;
     std::string lexeme;
@@ -22,10 +22,10 @@ struct Token {
     Token(Type, const std::string&);
 };
 
-const char* Token::token_names[23] = { "ID", "LABEL", "NUM", "EOL", "ERR", "END", 
+const char* Token::token_names[24] = { "ID", "LABEL", "NUM", "EOL", "ERR", "END", 
                                        "PUSH", "JMEPEQ", "JMPGT", "JMPGE", "JMPLT", "JMPLE", 
                                        "GOTO", "SKIP", "POP", "DUP", "SWAP", 
-                                       "ADD", "SUB", "MUL", "DIV", "STORE", "LOAD" };
+                                       "ADD", "SUB", "MUL", "DIV", "STORE", "LOAD", "PRINT" };
 
 Token::Token(Type t): type(t) { lexeme = ""; }
 Token::Token(Type t, char c): type(t) { lexeme = c; }

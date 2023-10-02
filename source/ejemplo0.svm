@@ -1,7 +1,7 @@
-mul 3
+push 3
 
 
 L1: jmpgt
 mul
 add
-goto L1
+goto L2
