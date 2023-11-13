@@ -1,10 +1,10 @@
 # **Compiler Design | `Lexical Analysis`**
 
-Diseño e implementación de un analizador léxico (`scanner`) para el lenguaje SM (Stack Machine Language) definido en la primera sección. El analizador léxico es una parte fundamental de un compilador y descompone el código fuente en unidades más pequeñas llamadas tokens para facilitar su procesamiento y análisis subsiguientes.
+Design and implementation of a lexical analyzer (`scanner`) for the SM (Stack Machine Language) defined in the first section. The lexical analyzer is a fundamental part of a compiler and breaks down the source code into smaller units called tokens to facilitate subsequent processing and analysis.
 
-## **Lenguaje SM (Stack Machine Language)**
+## **SM (Stack Machine Language)**
 
-La siguiente gramática establece la estructura básica de las instrucciones en el lenguaje SM, incluyendo la posibilidad de etiquetas (labels), instrucciones de salto (jump instructions), y operaciones unarias (unary instructions).
+The following grammar establishes the basic structure of instructions in the SM language, including the possibility of labels, jump instructions, and unary operations.
 
 ```plaintext
 <program>       ::= <instruction>+
@@ -14,7 +14,7 @@ La siguiente gramática establece la estructura básica de las instrucciones en 
 <jmpinstr>      ::= jmpeq | jmpgt | jmpge | jmplt | jmple | goto
 ```
 
-La especificación léxica define las reglas para reconocer tokens y lexemas en el código fuente SM. Aquí están las expresiones regulares que se utilizan:
+The lexical specification defines rules to recognize tokens and lexemes in the SM source code. Here are the regular expressions used:
 
 ```plaintext
 digit               ::= [0-9]
@@ -28,11 +28,11 @@ character           ::= [a-zA-Z]
 <ws>                ::= (‘ ‘ | ‘\t’)+
 ```
 
-Según estas reglas léxicas, las unidades léxicas como `<id>`, `<num>`, `<eol>` y todas las palabras reservadas se convierten en tokens. Sin embargo, el patrón `<ws>`, que representa espacios en blanco, no genera tokens y se ignora. Los nombres de los tokens se escriben en mayúsculas y coinciden con las unidades léxicas correspondientes.
+According to these lexical rules, lexical units like `<id>`, `<num>`, `<eol>`, and all reserved words become tokens. However, the `<ws>` pattern, representing whitespace, does not generate tokens and is ignored. Token names are written in uppercase and match the corresponding lexical units.
 
-## **Ejemplo input y output**
+## **Example input and output**
 
-**input**: ejemplo0.svm
+**input**: example0.svm
 
 ```plaintext
 push 3
