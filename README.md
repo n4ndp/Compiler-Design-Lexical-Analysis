@@ -1,6 +1,6 @@
 # **Compiler Design | `Lexical Analysis`**
 
-Implementación académica de un analizador léxico (`scanner`) para el lenguaje SM (Lenguaje de Máquina de Pila). El analizador léxico es una parte fundamental de un compilador y se encarga de dividir el código fuente en unidades más pequeñas llamadas *tokens*, facilitando su procesamiento y análisis posterior.
+Diseño e implementación de un analizador léxico (`scanner`) para el lenguaje SM (Lenguaje de Máquina de Pila). El analizador léxico es una parte fundamental de un compilador y se encarga de dividir el código fuente en unidades más pequeñas llamadas *tokens*, facilitando su procesamiento y análisis posterior.
 
 ## **SM (Stack Machine Language)**
 
