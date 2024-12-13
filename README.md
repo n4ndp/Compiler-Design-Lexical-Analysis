@@ -1,10 +1,10 @@
 # **Compiler Design | `Lexical Analysis`**
 
-Design and implementation of a lexical analyzer (`scanner`) for the SM (Stack Machine Language) defined in the first section. The lexical analyzer is a fundamental part of a compiler and breaks down the source code into smaller units called tokens to facilitate subsequent processing and analysis.
+Implementación académica de un analizador léxico (`scanner`) para el lenguaje SM (Lenguaje de Máquina de Pila). El analizador léxico es una parte fundamental de un compilador y se encarga de dividir el código fuente en unidades más pequeñas llamadas *tokens*, facilitando su procesamiento y análisis posterior.
 
 ## **SM (Stack Machine Language)**
 
-The following grammar establishes the basic structure of instructions in the SM language, including the possibility of labels, jump instructions, and unary operations.
+La siguiente gramática establece la estructura básica de las instrucciones del lenguaje SM, incluyendo la posibilidad de etiquetas, instrucciones de salto y operaciones unarias.
 
 ```plaintext
 <program>       ::= <instruction>+
@@ -14,7 +14,7 @@ The following grammar establishes the basic structure of instructions in the SM 
 <jmpinstr>      ::= jmpeq | jmpgt | jmpge | jmplt | jmple | goto
 ```
 
-The lexical specification defines rules to recognize tokens and lexemes in the SM source code. Here are the regular expressions used:
+La especificación léxica establece las reglas para identificar los tokens y lexemas presentes en el código fuente del lenguaje SM. A continuación, se presentan las expresiones regulares utilizadas:
 
 ```plaintext
 digit               ::= [0-9]
@@ -28,11 +28,11 @@ character           ::= [a-zA-Z]
 <ws>                ::= (‘ ‘ | ‘\t’)+
 ```
 
-According to these lexical rules, lexical units like `<id>`, `<num>`, `<eol>`, and all reserved words become tokens. However, the `<ws>` pattern, representing whitespace, does not generate tokens and is ignored. Token names are written in uppercase and match the corresponding lexical units.
+De acuerdo con estas reglas léxicas, las unidades léxicas como `<id>`, `<num>`, `<eol>` y todas las palabras reservadas se convierten en *tokens*. Sin embargo, el patrón `<ws>`, que representa los espacios en blanco, no genera tokens y se ignora. Los nombres de los tokens se escriben en mayúsculas y coinciden con las unidades léxicas correspondientes.
 
-## **Example input and output**
+## **Ejemplo de entrada y salida**
 
-**input**: example0.svm
+**Entrada**: `example0.svm`
 
 ```plaintext
 push 3
@@ -45,7 +45,7 @@ goto L2
 
 ```
 
-**output**:
+**Salida**:
 
 ```plaintext
 next token PUSH
